@@ -3,11 +3,11 @@ from google.auth.transport import Request
 import google.oauth2.credentials
 from secret_manager import addSecretVersion, accessSecretVersion
 import json
-import os
 import datetime
 import logging
 import sys
-import time
+import random
+import requests
 
 MAX_NUM_RETRY = 3
 API_SERVICE_NAME = 'photoslibrary'
@@ -77,7 +77,8 @@ def getMediaItems(service):
     pagesize = 0
     response = {'nextPageToken': None}
     while 'nextPageToken' in response.keys():
-        response = service.mediaItems().search(body=body).execute(num_retries=MAX_NUM_RETRY)
+        response = service.mediaItems().search(
+            body=body).execute(num_retries=MAX_NUM_RETRY)
 
         if 'mediaItems' in response.keys():
             pagesize += len(response['mediaItems'])
@@ -88,3 +89,20 @@ def getMediaItems(service):
         logging.debug('Get pagesize Sum: ' + str(pagesize))
 
     return mediaItems
+
+
+def getRandomMediaItemsWithImageBinary(mediaItems):
+    '''
+    mediaItemsからランダムに１個選択し、写真をbaseUrlにより取得し'imageBinary'のkeyに追加して返す。
+    '''
+
+    if len(mediaItems) == 0:
+        logging.info("A number of MediaItems is 0.")
+        return None
+    mediaItem = random.choice(mediaItems)
+    response = requests.get(mediaItem['baseUrl'])
+    if response.status_code != 200:
+        logging.error("Getting an image was failed.")
+        return None
+    mediaItem['imageBinary'] = response.content
+    return mediaItem
