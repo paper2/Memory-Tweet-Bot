@@ -1,4 +1,3 @@
 __pycache__
 venv
-# test時に出力された場合にgitに含めないため
-*.jpeg
+client_secret.json

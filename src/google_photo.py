@@ -1,11 +1,10 @@
 from googleapiclient.discovery import build
-from google.auth.transport import Request
+from google.auth.transport.requests import Request
 import google.oauth2.credentials
 from secret_manager import addSecretVersion, accessSecretVersion
 import json
 import datetime
 import logging
-import sys
 import random
 import requests
 
@@ -33,12 +32,15 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
         refresh_token=credentials_json['refresh_token'],
         token_uri=credentials_json['token_uri'],
         client_id=credentials_json['client_id'],
-        client_secret=credentials_json['client_secret']
+        client_secret=credentials_json['client_secret'],
+        expiry=datetime.datetime.strptime(
+            credentials_json['expiry'], '%Y-%m-%dT%H:%M:%S.%fZ')
     )
 
     if not credentials or not credentials.valid:
         # 有効期限が切れていたら更新
         if credentials and credentials.expired and credentials.refresh_token:
+            logging.info('Credential refresh.')
             credentials.refresh(Request())
             # Secret Managerに更新したクレデンシャルを保存
             addSecretVersion(project_id, secret_id, credentials.to_json())
