@@ -6,3 +6,9 @@ resource "google_secret_manager_secret" "google_oauth_credentials" {
     automatic = true
   }
 }
+resource "google_secret_manager_secret" "twitter_credentials" {
+  secret_id = "twitter-credentials"
+  replication {
+    automatic = true
+  }
+}

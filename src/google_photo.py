@@ -72,6 +72,8 @@ def getMediaItems(service):
             # "includedContentCategories"により、PEOPELなどカテゴリでフィルタできる。適宜活用する。
             # https://developers.google.com/photos/library/reference/rest/v1/mediaItems/search#contentcategory
             'filters': {'contentFilter': {"includedContentCategories": ["NONE"]},
+                        # NOTE: datesのフィルターはday（UTC）までしか指定できない。そのため00:00(JST)~09:00(JST)の間は前日の写真が取得されてしまう。
+                        #       JSTで日にちを指定しているが、返却される時刻はUTCなので注意。
                         'dateFilter': {'dates': [{"year": 0, "month": today.month, "day": today.day}]}}}
     mediaItems = []
     pagesize = 0
