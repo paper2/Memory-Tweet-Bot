@@ -7,6 +7,7 @@ import datetime
 import logging
 import random
 import requests
+import exceptions
 
 MAX_NUM_RETRY = 3
 API_SERVICE_NAME = 'photoslibrary'
@@ -22,7 +23,7 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
     # NOTE: 初期構築時は手動でバージョンを追加する必要がある。
     credentials_raw = accessSecretVersion(project_id, secret_id, version_id)
 
-        credentials_json = json.loads(credentials_raw)
+    credentials_json = json.loads(credentials_raw)
 
     # クレデンシャルの作成
     credentials = google.oauth2.credentials.Credentials(
@@ -43,8 +44,7 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
             # Secret Managerに更新したクレデンシャルを保存
             addSecretVersion(project_id, secret_id, credentials.to_json())
         else:
-            logging.error('Credential is invalid.')
-            return None
+            raise exceptions.authError('トークンが不正です。')
 
     return credentials
 
@@ -111,6 +111,7 @@ def getRandomMediaItemsWithImageBinary(mediaItems):
     # 写真のバイナリを取得
     response = requests.get(mediaItem['baseUrl'])
     if response.status_code != 200:
+        raise exceptions.googlePhoto("Getting an image was failed.")
 
     # 写真のバイナリを追加。
     mediaItem['imageBinary'] = response.content

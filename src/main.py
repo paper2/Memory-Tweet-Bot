@@ -2,7 +2,9 @@ import functions_framework
 import google_photo
 import twitter
 import google.cloud.logging
+import logging
 
+# TODO: 環境変数で設定するようにする
 PROJECT_ID = 'rising-beach-352202'
 GOOGLE_OAUTH_CREDENITIALS_SECRET_ID = 'google-oauth-credentials'
 TWITTER_CREDENITIALS_SECRET_ID = 'twitter-credentials'
@@ -21,6 +23,10 @@ def memory_tweet(cloud_event):
         PROJECT_ID, GOOGLE_OAUTH_CREDENITIALS_SECRET_ID, 'latest')
     service = google_photo.getService(google_oauth_credentials)
     mediaItems = google_photo.getMediaItems(service)
+    if len(mediaItems) == 0:
+        logging.info("本日の写真はありません。")
+        return
+
     mediaItem = google_photo.getRandomMediaItemsWithImageBinary(mediaItems)
 
     # Twitterに画像付きでツイート。
