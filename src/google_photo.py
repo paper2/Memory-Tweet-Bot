@@ -18,15 +18,13 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
     API接続時に必要なクレデンシャルを取得する。
     """
 
+    # 認証情報をSecretManagerから取得。
     # NOTE: 初期構築時は手動でバージョンを追加する必要がある。
     credentials_raw = accessSecretVersion(project_id, secret_id, version_id)
 
-    try:
         credentials_json = json.loads(credentials_raw)
-    except json.JSONDecodeError as e:
-        logging.error(e)
-        return None
 
+    # クレデンシャルの作成
     credentials = google.oauth2.credentials.Credentials(
         credentials_json['token'],
         refresh_token=credentials_json['refresh_token'],
@@ -38,7 +36,7 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
     )
 
     if not credentials or not credentials.valid:
-        # 有効期限が切れていたら更新
+        # 有効期限が切れていた場合更新
         if credentials and credentials.expired and credentials.refresh_token:
             logging.info('Credential refresh.')
             credentials.refresh(Request())
@@ -65,6 +63,8 @@ def getMediaItems(service):
     '''
     実行日と日付が同じMediaItemsを全て取得する。
     EX) 2019/09/22日に実行した場合は、xxxx/09/22に保存されたMediaItemsを取得する。
+
+    NOTE: Google Photo APIの仕様上、JSTで利用する場合00:00(JST)~09:00(JST)の間は前日の写真が取得されてしまう。
     '''
 
     t_delta = datetime.timedelta(hours=9)  # 9時間
@@ -75,12 +75,13 @@ def getMediaItems(service):
             # https://developers.google.com/photos/library/reference/rest/v1/mediaItems/search#contentcategory
             'filters': {'contentFilter': {"includedContentCategories": ["NONE"]},
                         # NOTE: datesのフィルターはday（UTC）までしか指定できない。そのため00:00(JST)~09:00(JST)の間は前日の写真が取得されてしまう。
-                        #       JSTで日にちを指定しているが、返却される時刻はUTCなので注意。
+                        #       上記制約の影響を緩和するためにJSTで日にちを指定しているが、返却される時刻はUTCなので注意。
                         'dateFilter': {'dates': [{"year": 0, "month": today.month, "day": today.day}]}}}
     mediaItems = []
     pagesize = 0
     response = {'nextPageToken': None}
     while 'nextPageToken' in response.keys():
+        # 検索を実行。
         response = service.mediaItems().search(
             body=body).execute(num_retries=MAX_NUM_RETRY)
 
@@ -97,16 +98,20 @@ def getMediaItems(service):
 
 def getRandomMediaItemsWithImageBinary(mediaItems):
     '''
-    mediaItemsからランダムに１個選択し、写真をbaseUrlにより取得し'imageBinary'のkeyに追加して返す。
+    mediaItemsからランダムに1個を選択し、写真のバイナリを追加して返す。
     '''
 
     if len(mediaItems) == 0:
         logging.info("A number of MediaItems is 0.")
         return None
+
+    # mediaItemsからランダムに要素を選択。
     mediaItem = random.choice(mediaItems)
+
+    # 写真のバイナリを取得
     response = requests.get(mediaItem['baseUrl'])
     if response.status_code != 200:
-        logging.error("Getting an image was failed.")
-        return None
+
+    # 写真のバイナリを追加。
     mediaItem['imageBinary'] = response.content
     return mediaItem

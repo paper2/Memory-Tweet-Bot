@@ -1,3 +1,8 @@
+# cacheを除外
 __pycache__
+
+# venv設定は除外
 venv
+
+# 初回構築で利用する認証情報がgitに含まれないように除外する。
 client_secret.json
