@@ -70,13 +70,18 @@ def getMediaItems(service):
     t_delta = datetime.timedelta(hours=9)  # 9時間
     JST = datetime.timezone(t_delta, 'JST')  # UTCから9時間差の「JST」タイムゾーン
     today = datetime.datetime.now(JST)
-    body = {'pageSize': 100,
+    body = {
+        'pageSize': 100,
+        'filters': {
             # "includedContentCategories"により、PEOPELなどカテゴリでフィルタできる。適宜活用する。
             # https://developers.google.com/photos/library/reference/rest/v1/mediaItems/search#contentcategory
-            'filters': {'contentFilter': {"includedContentCategories": ["NONE"]},
-                        # NOTE: datesのフィルターはday（UTC）までしか指定できない。そのため00:00(JST)~09:00(JST)の間は前日の写真が取得されてしまう。
-                        #       上記制約の影響を緩和するためにJSTで日にちを指定しているが、返却される時刻はUTCなので注意。
-                        'dateFilter': {'dates': [{"year": 0, "month": today.month, "day": today.day}]}}}
+            'contentFilter': {'includedContentCategories': ['NONE']},
+            # NOTE: datesのフィルターはday（UTC）までしか指定できない。そのため00:00(JST)~09:00(JST)の間は前日の写真が取得されてしまう。
+            #       上記制約の影響を緩和するためにJSTで日にちを指定しているが、返却される時刻はUTCなので注意。
+            'dateFilter': {'dates': [{'year': 0, 'month': today.month, 'day': today.day}]},
+            'mediaTypeFilter': {'mediaTypes': ['PHOTO']}
+        }
+    }
     mediaItems = []
     pagesize = 0
     response = {'nextPageToken': None}
