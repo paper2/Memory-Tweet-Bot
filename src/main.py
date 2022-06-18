@@ -3,11 +3,13 @@ import google_photo
 import twitter
 import google.cloud.logging
 import logging
+import os
 
-# TODO: 環境変数で設定するようにする
-PROJECT_ID = 'rising-beach-352202'
-GOOGLE_OAUTH_CREDENITIALS_SECRET_ID = 'google-oauth-credentials'
-TWITTER_CREDENITIALS_SECRET_ID = 'twitter-credentials'
+PROJECT_ID = os.environ.get('PROJECT_ID')
+GOOGLE_OAUTH_CREDENITIALS_SECRET_ID = os.environ.get(
+    'GOOGLE_OAUTH_CREDENITIALS_SECRET_ID')
+TWITTER_CREDENITIALS_SECRET_ID = os.environ.get(
+    'TWITTER_CREDENITIALS_SECRET_ID')
 
 
 @functions_framework.cloud_event

@@ -26,6 +26,8 @@ resource "google_cloudfunctions_function" "memory_tweet" {
   name    = "memory_tweet"
   runtime = "python39"
 
+  available_memory_mb = 256
+
   # Get the source code of the cloud function as a Zip compression
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.memory_tweet_zip.name
@@ -40,4 +42,9 @@ resource "google_cloudfunctions_function" "memory_tweet" {
 
   service_account_email = google_service_account.memory_tweet_function.email
 
+  environment_variables = {
+    PROJECT_ID                          = var.project_id
+    GOOGLE_OAUTH_CREDENITIALS_SECRET_ID = google_secret_manager_secret.google_oauth_credentials.secret_id
+    TWITTER_CREDENITIALS_SECRET_ID      = google_secret_manager_secret.twitter_credentials.secret_id
+  }
 }
