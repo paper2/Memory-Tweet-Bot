@@ -124,6 +124,8 @@ print_credentials.pyを実行し、表示されたURLにアクセスし、連携
 
 ```
 $ cd src
+$ pip install -r requirements.txt
+（省略）
 $ python print_credentials.py
 Please visit this URL to authorize this application: https://accounts.google.com/o/oauth2/auth?response_type=xxxxxxxxxxxxxxx
 Enter the authorization code: 
