@@ -1,3 +1,4 @@
+目次
 - [前提](#前提)
 - [Twitter APIの準備](#twitter-apiの準備)
 - [Google Photoのクレデンシャル作成](#google-photoのクレデンシャル作成)
@@ -16,7 +17,7 @@ Twitter APIを利用するためのクレデンシャルを作成します。
 
 まず、Bot用のアカウントを[Twitter Signup](https://twitter.com/i/flow/signup)で作成してください。
 Google Photoの写真が公開されるため、「[ツイートを公開または非公開に設定する方法](https://help.twitter.com/ja/safety-and-security/how-to-make-twitter-private-and-public)」を参考に非公開に設定しておくことをお勧めします。
-既存アカウントを利用しても問題ありませんが、Google Photoの写真がランダムでツイートされるますのでご注意ください。
+既存アカウントを利用しても問題ありませんが、Google Photoの写真がランダムでツイートされますのでご注意ください。
 
 次に[Twitter Developer Platform](https://developer.twitter.com/en)にアクセスしサインアップします。Twitterアカウントの作成とは別に実施する必要があります。
 
@@ -82,7 +83,7 @@ Appのトップ画面に戻ったら「Keys and tokens」からトークンを�
 ![picture 16](../images/20220618-044540-860.png)  
 ![picture 17](../images/20220618-044712-59.png)  
 
-「スコープを追加または削除」を押下し、出てきた画面を下にスクロールし、「スコープの手動追加」で「https://www.googleapis.com/auth/photoslibrary.readonly」と入力し、「テーブルに追加」を押下し、次に「更新」を押下します。
+「スコープを追加または削除」を押下し、出てきた画面を下にスクロールし、「スコープの手動追加」で「 https://www.googleapis.com/auth/photoslibrary.readonly 」と入力し、「テーブルに追加」を押下し、次に「更新」を押下します。
 
 ![picture 18](../images/20220618-045225-101.png)  
 
@@ -196,8 +197,6 @@ $ gcloud services enable pubsub.googleapis.com
 $ gcloud services enable secretmanager.googleapis.com
 $ gcloud services enable cloudbuild.googleapis.com
 $ gcloud services enable photoslibrary.googleapis.com                      
-
-
 ```
 
 `terraform init` を実行します。
@@ -271,6 +270,7 @@ echo '<Google Photoのクレデンシャル>' | gcloud secrets versions add goog
 
 # 確認
 $ gcloud secrets versions access latest --secret="google-oauth-credentials"
+{"token": "xxxxxxxxxxxxxxxx"...}
 
 # Shedulerから試しに実行してみる。
 $ gcloud scheduler jobs run memory-tweet  --location=asia-northeast1
