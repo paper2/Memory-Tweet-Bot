@@ -1,6 +1,6 @@
 variable "project_id" {
   type    = string
-  default = "rising-beach-352202"
+  default = "memory-tweet"
 }
 
 variable "region" {
