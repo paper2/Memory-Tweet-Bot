@@ -7,6 +7,7 @@ data "archive_file" "memory_tweet_source" {
     "venv",
     "__pycache__",
     ".gitignore",
+    "client_secret.json",
   ]
 }
 
