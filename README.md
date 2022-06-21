@@ -1,4 +1,4 @@
-# Memory Tweet Bot on GCP Cloud Function
+# Memory Tweet Bot on GCP Cloud Functions
 
 今日の日付と同じ過去の画像をランダムにGoogle Photoから取得し、画像付きでツイートするBotです。例えば今日が2022/06/18の場合、Google PhotoからXXXX/06/18の写真をランダムで取得し、画像付きでツイートします。
 
@@ -13,7 +13,7 @@
 
 ![architecture](doc/images/architecture.svg)
 
-PythonをCloud Function上で実行します。Cloud Schedulerにより１時間ごとににCloud Functionを実行しています。Google PhotoやTwitterで利用するクレデンシャルはSecret Managerに保存し、Cloud Functionから利用します。一部の初期構築以外は全てTerraformで管理できます。
+PythonをCloud Functions上で実行します。Cloud Schedulerにより１時間ごとににCloud Functionを実行しています。Google PhotoやTwitterで利用するクレデンシャルはSecret Managerに保存し、Cloud Functionから利用します。一部の初期構築以外は全てTerraformで管理できます。
 
 # 構築
 - [setup.md](./doc/setup.md)
