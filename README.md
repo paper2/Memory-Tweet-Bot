@@ -9,11 +9,11 @@
 データを溜めただけで満足してはいけません。どのように活用するかが重要なのです。そこで私は毎日チェックするTwitterで思い出を振り返れるようにしたのです。
 
 
-# アーキテクチャ
+# アーキテクチャ概要
 
 ![architecture](doc/images/architecture.svg)
 
-PythonをCloud Functions上で実行します。Cloud Schedulerにより１時間ごとににCloud Functionを実行しています。Google PhotoやTwitterで利用するクレデンシャルはSecret Managerに保存し、Cloud Functionから利用します。一部の初期構築以外は全てTerraformで管理できます。
+Cloud Schedulerにより１時間ごとにCloud Functionsが実行され、Tweetをします。ランタイムはPythonです。Cloud Functionsは実行されると、Google Photoから写真を取得し、Twitterに画像付きでツイートをします。Google PhotoやTwitterで利用するクレデンシャルはSecret Managerに保存します。一部の初期構築以外は全てTerraformで管理できます。
 
-# 構築
+# 構築手順
 - [setup.md](./doc/setup.md)

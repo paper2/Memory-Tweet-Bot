@@ -1,4 +1,4 @@
-# Generates an archive of the source code compressed as a .zip file.
+# Cloud FunctionsのコードをZIPにします。
 data "archive_file" "memory_tweet_source" {
   type        = "zip"
   source_dir  = "../src"
@@ -11,29 +11,28 @@ data "archive_file" "memory_tweet_source" {
   ]
 }
 
-# Add source code zip to the Cloud Function's bucket
+# 作ったZIPをCloud Storageにuploadします。
 resource "google_storage_bucket_object" "memory_tweet_zip" {
   source       = data.archive_file.memory_tweet_source.output_path
   content_type = "application/zip"
 
-  # Append to the MD5 checksum of the files's content
-  # to force the zip to be updated as soon as a change occurs
+  # ファイル内容からMD5を作成し、ファイル名とします。
+  # これでソースコードの変更時にCloud Funcationsが更新されるようになります。
   name   = "src-${data.archive_file.memory_tweet_source.output_md5}.zip"
   bucket = google_storage_bucket.function_bucket.name
 }
 
-# Create the Cloud function triggered by a `Finalize` event on the bucket
+# クラウドスケジューラーにより実行されるCloud Funcationを作成。
 resource "google_cloudfunctions_function" "memory_tweet" {
   name    = "memory_tweet"
   runtime = "python39"
 
   available_memory_mb = 256
 
-  # Get the source code of the cloud function as a Zip compression
+  # Cloud Functionのコードが入ったZIPを指定します。
   source_archive_bucket = google_storage_bucket.function_bucket.name
   source_archive_object = google_storage_bucket_object.memory_tweet_zip.name
 
-  # Must match the function name in the cloud function `main.py` source code
   entry_point = "memory_tweet"
 
   event_trigger {

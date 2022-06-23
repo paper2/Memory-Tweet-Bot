@@ -32,6 +32,7 @@ def uploadMedia(mediaItem, credentials):
 
     api = tweepy.API(auth)
 
+    # JSTに変換する。
     t_delta = datetime.timedelta(hours=9)  # 9時間
     dt_utc = datetime.datetime.strptime(
         mediaItem['mediaMetadata']['creationTime'], '%Y-%m-%dT%H:%M:%SZ')
