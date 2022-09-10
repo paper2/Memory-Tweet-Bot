@@ -1,5 +1,7 @@
 from google.cloud import secretmanager
 import logging
+import os
+
 
 def accessSecretVersion(project_id, secret_id, version_id):
     # Create the Secret Manager client.
@@ -14,9 +16,15 @@ def accessSecretVersion(project_id, secret_id, version_id):
     payload = response.payload.data.decode("UTF-8")
     return payload
 
+
 def addSecretVersion(project_id, secret_id, payload):
     """
     payloadでシークレットに新しいバージョンを追加する。
+
+    Returns
+    -------
+    version_id : int
+        作成したversionのid。
     """
 
     # Create the Secret Manager client.
@@ -39,3 +47,26 @@ def addSecretVersion(project_id, secret_id, payload):
 
     # Print the new secret version name.
     logging.info("Added secret version: {}".format(response.name))
+
+    version_id = os.path.basename(response.name)
+    return int(version_id)
+
+
+def destroy_secret_version(project_id, secret_id, version_id):
+    """
+    与えられたsecret versionを削除。
+    """
+
+    # Import the Secret Manager client library.
+    from google.cloud import secretmanager
+
+    # Create the Secret Manager client.
+    client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret version
+    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+
+    # Destroy the secret version.
+    response = client.destroy_secret_version(request={"name": name})
+
+    logging.info("Destroyed secret version: {}".format(response.name))

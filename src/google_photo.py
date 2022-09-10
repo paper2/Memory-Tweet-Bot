@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 import google.oauth2.credentials
-from secret_manager import addSecretVersion, accessSecretVersion
+from secret_manager import addSecretVersion, accessSecretVersion, destroy_secret_version
 import json
 import datetime
 import logging
@@ -42,7 +42,11 @@ def getCredentialsFromSecretManager(project_id, secret_id, version_id):
             logging.info('Credential refresh.')
             credentials.refresh(Request())
             # Secret Managerに更新したクレデンシャルを保存
-            addSecretVersion(project_id, secret_id, credentials.to_json())
+            version_id = addSecretVersion(
+                project_id, secret_id, credentials.to_json())
+            # 古いVersionを削除。
+            old_version_id = version_id - 1
+            destroy_secret_version(project_id, secret_id, old_version_id)
         else:
             raise exceptions.authError('トークンが不正です。')
 
