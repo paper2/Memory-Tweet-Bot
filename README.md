@@ -17,3 +17,45 @@ Cloud Schedulerにより１時間ごとにCloud Functionsが実行され、Tweet
 
 # 構築手順
 - [setup.md](./doc/setup.md)
+
+# テスト
+
+プロジェクトの設定とログイン
+
+```
+$ gcloud config set project memory-tweet-xxxx
+$ gcloud auth application-default login
+```
+
+環境変数をセット
+
+```
+$ cd src
+
+$ export PROJECT_ID=memory-tweet-xxxx
+$ export EXECUTE_ENV='LOCAL'
+$ export GOOGLE_OAUTH_CREDENITIALS_SECRET_ID='google-oauth-credentials'       
+$ export TWITTER_CREDENITIALS_SECRET_ID='twitter-credentials'     
+
+```
+
+funcations-frameworkの実行
+```
+$ functions-framework --target=memory_tweet
+```
+
+違うタブでcurlする。
+
+```
+$ curl -X POST localhost:8080 \
+   -H "Content-Type: application/cloudevents+json" \
+   -d '{
+"specversion" : "1.0",
+"type" : "example.com.cloud.event",
+"source" : "https://example.com/cloudevents/pull",
+"subject" : "123",
+"id" : "A234-1234-1234",
+"time" : "2018-04-05T17:31:00Z",
+"data" : "hello world"
+}'
+```
