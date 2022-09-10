@@ -12,16 +12,19 @@ TWITTER_CREDENITIALS_SECRET_ID = os.environ.get(
     'TWITTER_CREDENITIALS_SECRET_ID')
 EXECUTE_ENV = os.environ.get('EXECUTE_ENV')
 
+if EXECUTE_ENV == "LOCAL":
+    logging.basicConfig(level=logging.DEBUG)
+    for key, val in os.environ.items():
+        logging.debug('{}: {}'.format(key, val))
+else:
+    # Cloud Loggingと統合。エラー発生箇所なども記録されるので便利。
+    client = google.cloud.logging.Client()
+    # デフォルトでINFO以上が収集される。
+    client.setup_logging()
+
 
 @functions_framework.cloud_event
 def memory_tweet(cloud_event):
-    # Cloud Loggingと統合。エラー発生箇所なども記録されるので便利。
-    # ログはCloud Loggingで確認する。
-    client = google.cloud.logging.Client()
-    if EXECUTE_ENV != "LOCAL":
-        # デフォルトでINFO以上が収集される。
-        client.setup_logging()
-
     # Google Photoから今日の写真をランダムで取得。
     google_oauth_credentials = google_photo.getCredentialsFromSecretManager(
         PROJECT_ID, GOOGLE_OAUTH_CREDENITIALS_SECRET_ID, 'latest')
